@@ -1,35 +1,11 @@
 version: '3'
-
 services:
-  # 你的 Streamlit 应用
   streamlit-app:
-    build: .
     container_name: water_monitor_app
-    restart: unless-stopped
+    build: .
+    ports:
+      - "8501:8501"
     volumes:
-      # 挂载数据卷以保存数据库，防止重启丢失数据
-      - ./data:/app/data
-      # 挂载上传的二维码目录
-      - ./uploaded_qr:/app/uploaded_qr
+      - .:/app
     environment:
-      # 告诉 db_manager.py 使用挂载的目录
-      - DB_PATH=/app/data/water_env.db
-    networks:
-      - tunnel-net
-
-  # Cloudflare Tunnel 守护进程
-  # 如果你不需要 Cloudflare Tunnel，可以注释掉下面这部分
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared_tunnel
-    restart: unless-stopped
-    command: tunnel run
-    environment:
-      # 请替换为你从 Cloudflare Dashboard 获取的 Token
-      - TUNNEL_TOKEN=eyJhIjoi...
-    networks:
-      - tunnel-net
-
-networks:
-  tunnel-net:
-    driver: bridge
+      - TZ=Asia/Shanghai
